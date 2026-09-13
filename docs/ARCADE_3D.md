@@ -23,3 +23,9 @@ Three.js 0.180.0 is vendored locally with its MIT license; the game has no runti
 `node tests/arcade3d.cjs`: all three cabinet storage routes, complete floor coverage at each stage, service-panel approach, repaired cabinet return, collision with walls/bounds, acceleration/release, failed circuits, and save validation. The complete simulated route is approximately 131 seconds, with state serialized/deserialized every 97 movement frames to exercise reloads while hauling. Earlier prototypes retain their existing tests.
 
 During development the route tests exposed cabinet corner-cutting and storage entrance congestion. Breadcrumb-based hauling, wider obstacle clearance, and a rear storage aisle resolved both. Browser playtesting is performed with UI-driven movement, not by changing hidden game state; it is distinct from human feel testing.
+
+## Release verification
+
+Browser-controlled playtest: all three cabinet pickups and storage deliveries; load/reload while hauling; room and follow cameras; keyboard orbit and wheel zoom; complete sweeping stage into the scrubber; partial scrubbing; keyboard takeover and return to click walking; 390×844 layout inspection. No browser warnings or errors were captured. Full later restoration stages and the return trip were verified by the deterministic route test, not claimed as a complete browser or human feel playthrough.
+
+Published commit `9ff3eeb` passed GitHub Actions run `34781751083`. Public HTML, scene, model, stylesheet, and both Three.js modules returned HTTP 200 and exactly matched local files after newline normalization. `/flat/` and `/legacy/` returned HTTP 200. The public 3D scene rendered successfully with no logged warnings/errors and was left at a fresh start.
