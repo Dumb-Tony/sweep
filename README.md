@@ -24,6 +24,7 @@ Node.js is needed only for these tests and optional preview:
 ```text
 node tests/physics.cjs
 node tests/controls.cjs
+node tests/motion.cjs
 node tests/serve.cjs
 ```
 

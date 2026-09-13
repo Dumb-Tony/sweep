@@ -1,7 +1,7 @@
 // Pure simulation tests; these are not human playtests or browser input automation.
-const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),{performance}=require('node:perf_hooks');
+const fs=require('node:fs'),assert=require('node:assert/strict'),{performance}=require('node:perf_hooks');
 const html=fs.readFileSync(__dirname+'/../prototypes/m1/index.html','utf8');
-const context={module:{exports:{}}};vm.runInNewContext(html.match(/<script id="simulation">([\s\S]*?)<\/script>/)[1],context);const C=context.module.exports;
+const context={module:{exports:{}}};new Function('module',html.match(/<script id="simulation">([\s\S]*?)<\/script>/)[1])(context.module);const C=context.module.exports;
 const reports=[];function test(name,fn){const result=fn();reports.push({name,...result});console.log('PASS',name,result||'');}
 function input(x,y,more={}){return{x,y,smoothing:.03,sensitivity:1,...more};}function run(s,n,i){for(let k=0;k<n;k++)C.step(s,typeof i==='function'?i(k):i);}
 function valid(s){for(const p of s.pieces){assert(Number.isFinite(p.x)&&Number.isFinite(p.y)&&Number.isFinite(p.vx)&&Number.isFinite(p.vy));assert(p.x>=24+p.r-1e-8&&p.x<=936-p.r+1e-8);assert(p.y>=24+p.r-1e-8&&p.y<=616-p.r+1e-8);}assert.equal(s.weight,s.pieces.filter(p=>p.disposed).reduce((a,p)=>a+p.weight,0));assert.equal(s.disposed,s.pieces.filter(p=>p.disposed&&p.type!=='keys').length);}

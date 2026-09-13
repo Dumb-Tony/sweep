@@ -28,7 +28,7 @@ Browser inspection prompted a viewport-relative floor size and focus without aut
 
 F2 reports rendered FPS, p95 frame work, frame/simulation cost, simulation time, active bodies, broom speed/angle, contacts, strokes, state, accumulator, viewport, canvas size and browser version. The 120-frame rolling cost measures game JavaScript work, not GPU presentation latency. High FPS on this machine is not a minimum-device promise.
 
-Settings and best elapsed time use `sweep.m1.physics3.v1` in localStorage with try/catch and type/range validation. Reset clears that key. No cross-version comparisons or replays are persisted. Sound is synthesized after interaction and rate limited. Audio quality, pointer feel, touch comfort, assist comparability and the fresh-player exit gates need human testing. Best time is exploratory, with no competitive leaderboard.
+Settings and best elapsed time use `sweep.m1.physics3.v1` in localStorage with try/catch and type/range validation. Reset overwrites the current key with defaults and no best time, so old settings cannot migrate back on reload. No cross-version comparisons or replays are persisted. Sound is synthesized after interaction and rate limited. Audio quality, pointer feel, touch comfort, assist comparability and the fresh-player exit gates need human testing. Best time is exploratory, with no competitive leaderboard.
 
 ### M1.1 control repair
 

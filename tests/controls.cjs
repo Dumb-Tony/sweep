@@ -65,3 +65,10 @@ test('Comfort settings migrate without importing an incompatible best time',()=>
   assert.equal(b.el('quiet').checked,true);assert.equal(Number(b.el('sensitivity').value),.8);
   assert.equal(b.el('record').textContent,'Personal best: —');
 });
+
+test('Reset stays reset after reload instead of reimporting older comfort settings',()=>{
+  const saved={'sweep.m1.physics2.v1':JSON.stringify({settings:{quiet:true,sensitivity:.8},best:42})};
+  const b=boot({saved});b.el('resetLocal').onclick();const reloaded=boot({saved});
+  assert.equal(reloaded.el('quiet').checked,false);assert.equal(Number(reloaded.el('sensitivity').value),1);
+  assert.equal(reloaded.el('record').textContent,'Personal best: —');
+});
