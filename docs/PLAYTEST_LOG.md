@@ -47,6 +47,16 @@ Fixed keyboard rotation incorrectly lifting after movement ended by retaining th
 
 Next bounded experiment: fresh-player comprehension and feel test. Use at most two focused tuning rounds if scattering or lag dominates; do not add content to compensate for a failing core verb.
 
+### Public deployment verification
+
+- Public play URL: https://dumb-tony.github.io/sweep/
+- Repository: https://github.com/Dumb-Tony/sweep
+- Game commit: `b9cbade925436b2ac2e5af3f5be0dd65360e9b63`.
+- [GitHub Pages workflow 34739540892](https://github.com/Dumb-Tony/sweep/actions/runs/34739540892) completed successfully, including simulation and lifecycle tests on the Linux runner, artifact staging and Pages deployment.
+- Public response: HTTP 200, 28,600 bytes. Response HTML exactly matched the committed/local standalone file after CRLF/LF normalization.
+- Agent-operated public browser check: start, pointer sweep, settlement/disposal, F2 metrics and Escape pause. Public HUD reached 9% cleanup, nine disposed pieces, 5× delivery, and paused at 24.642 simulated seconds. Browser console inspection returned no warnings or errors. A sampled live frame window reported 177.9 FPS and 0.80 ms p95 JavaScript frame work.
+- The public tab was returned to the start screen for the user. This evidence-only log update does not change the tested game artifact.
+
 ## Entry template
 
 - Date / build / course / physics version:
