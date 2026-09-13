@@ -13,9 +13,13 @@ All 28 checks passed locally: nine physics, six lifecycle, nine controls (includ
 
 Agent-operated browser interaction uses the previously recorded PC and Chrome 152 at 1280×720, 696×464 canvas. Broad sweeps, lifted repositioning and pressure gathering were exercised. Sampled rendering varied with the in-app browser from roughly 58 to 110 FPS, with p95 JavaScript frame work 1.2–1.4 ms; this is not a locked-refresh benchmark. Subjective human smoothness is still unmeasured, and the five-player enjoyment gate remains pending. Public verification follows below.
 
-The final check also verified that a settings reset survives reload instead of re-importing old preferences. To remove VM-global proxy overhead from the pure simulation runner, it now compiles the same embedded script in a function scope. All replay and route outputs matched the earlier VM run exactly; the final native-context stress p95 was 0.439 ms/step (max 1.204 ms), and the full suite completed in about eight seconds locally. These timings are not comparable to the earlier VM overhead figures or GPU frame presentation.
+The final check also verified that a settings reset survives reload instead of re-importing old preferences. To remove VM-global proxy overhead from the pure simulation runner, it now compiles the same embedded script in a function scope. All replay and route outputs matched the earlier VM run exactly; the final native-context stress p95 was 0.439 ms/step (max 1.204 ms), and the physics suite completed in about eight seconds locally. These timings are not comparable to the earlier VM overhead figures or GPU frame presentation.
 
 The local browser session ended at 3:45 with 23% cleanup after broad/pressure sweeps, keyboard-to-mouse handoff, F reset and a short corrective stroke; it included inspection/idle time. Browser warning/error logs were empty. Full completion evidence is the separate physical route above, not this partial browser session.
+
+### M1.2 public verification
+
+Game commit c1fdad37a9764ec53c06bb9ecdf802f057a95656 passed all 28 checks and GitHub Pages deployment in [workflow 34775015418](https://github.com/Dumb-Tony/sweep/actions/runs/34775015418). Public HTTP 200 response: 31,636 bytes, exactly matching the committed HTML after line-ending normalization. Browser check at 652×1270 (594×396 canvas) verified start, sweep/delivery to 12%, a short corrective stroke and keyboard-to-mouse handoff with neutral angle/latches at 26.067 seconds. Warning/error logs were empty. Footer shows M1.2 / physics 3. This documentation-only update does not change the verified game.
 
 ## 2026-09-13 — M1.1 control repair / physics 2
 
