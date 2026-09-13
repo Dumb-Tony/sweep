@@ -1,5 +1,18 @@
 # Sweep — Playtest log
 
+## 2026-09-13 — M1.2 smoothing pass / physics 3
+
+User feedback: M1.1 controls improved, but movement still needed to feel smoother. This pass changes handling, not content.
+
+- Replaced instantaneous movement velocity with a short acceleration ramp. In the same long-stroke/reversal probe, first-step speed changed from 500 to 100 units/s and the largest reversal change dropped from 1,000 to 100 units/s per fixed step. The target cap is 650 units/s (previously 500) to reduce cursor chase time; pressure retains the 0.7 speed/acceleration ratio and 1.5 contact gain.
+- Added angular acceleration and easing into the final heading. A two-unit heading window rejects subpixel direction noise. A five-unit stroke still finishes its turn.
+- Interpolate rendered broom/debris poses between physics steps, including last-debris rings. Contacts, bin accounting and scoring still run at fixed 120 Hz. Visual interpolation costs at most one 8.33 ms step of latency. Cursor arrival is clamped to avoid overshoot; stopping keyboard input does not leave travel drifting.
+- Physics 2 comfort settings migrate to the new record key; previous best times are deliberately not compared with the changed handling.
+
+All 27 checks passed locally: nine physics, six lifecycle, eight controls (including migration and the ten-minute mixed-input soak), and four new motion checks. Subpixel tremor changed the settled heading by less than 0.01 radians; arrival settled without overshoot. The 30/60/120 FPS replays matched exactly: weight 70, score 2,050 after 7,200 steps. Full physical route: 211.62 simulated seconds, 112/120 weight, 96 debris pieces, keys recovered, 49 strokes, 2,870 points. The 200-piece wall stress passed (local VM p95 4.914 ms/step, max 6.337 ms).
+
+Agent-operated browser interaction uses the previously recorded PC and Chrome 152 at 1280×720, 696×464 canvas. Broad sweeps, lifted repositioning and pressure gathering were exercised. Sampled rendering varied with the in-app browser from roughly 58 to 110 FPS, with p95 JavaScript frame work 1.2–1.4 ms; this is not a locked-refresh benchmark. Subjective human smoothness is still unmeasured, and the five-player enjoyment gate remains pending. Public verification follows below.
+
 ## 2026-09-13 — M1.1 control repair / physics 2
 
 User report: controls initially worked reasonably, then became erratic during play. Follow-up narrowed the trigger to mouse → keyboard → mouse, affecting movement, orientation, and pressure/lift. This is a real usability failure report; the earlier smoke checks did not establish sustained control quality.

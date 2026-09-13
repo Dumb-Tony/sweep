@@ -59,3 +59,9 @@ test('Ten minutes of alternating input, pressure/lift, rotation, focus and reset
   }
   assert(Math.abs(b.state().s.time-600)<.1);console.log('SOAK',b.state().s.time.toFixed(3),'simulated seconds');
 });
+
+test('Comfort settings migrate without importing an incompatible best time',()=>{
+  const b=boot({saved:{'sweep.m1.physics2.v1':JSON.stringify({settings:{quiet:true,sensitivity:.8},best:42})}});
+  assert.equal(b.el('quiet').checked,true);assert.equal(Number(b.el('sensitivity').value),.8);
+  assert.equal(b.el('record').textContent,'Personal best: —');
+});
