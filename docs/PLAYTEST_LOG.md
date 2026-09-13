@@ -21,6 +21,12 @@ The follow-up prompted an additional failing regression: mouse sweep, keyboard A
 
 Agent-operated Chromium play at 1280×720 on the previously recorded PC: the first repair was played across multiple rows for a 4:52 session, reaching 66% cleanup with 33 bodies remaining, repeated lifted repositioning, pressure deliveries, scrolling and pause. This session included idle/inspection intervals and did not complete the floor or prove human feel. After the final handoff fix, a fresh browser session explicitly switched mouse → keyboard → mouse with lift/pressure enabled. The HUD reported keyboard ownership followed by pointer ownership, zero angle offset, and both latches off; mouse contact resumed. Full completion remains separately covered by the 248.13-second physical simulation route. No five-player pass is claimed.
 
+### M1.1 public verification
+
+Game commit `6c34d8a2730ea339472e48af2c52d6ba799d42d6` passed [workflow 34772212011](https://github.com/Dumb-Tony/sweep/actions/runs/34772212011), including all 22 physics/lifecycle/control checks and Pages deployment. The public URL returned HTTP 200 and 30,116 bytes, exactly matching the committed HTML after line-ending normalization.
+
+Repeated mouse → keyboard → mouse on the public game at the window's current 652×1270 viewport (594×396 canvas), deliberately enabling lift/pressure before returning to mouse. Ownership changed correctly, both latches cleared, offset stayed zero, and debris delivery resumed. HUD reached 12% cleanup / 5× delivery; F reset preserved that cleanup at 37.117 seconds. Browser warning/error logs were empty. Public footer identifies M1.1 / physics 2. This log-only update does not alter the verified game.
+
 ## 2026-09-13 — M1 implementation / fixed mess / physics 1
 
 **Decision: iterate within M1; ready for human testing, not a passed enjoyment gate.** No fresh human testers participated. All observations below are automated simulation, DOM-stub integration, or agent-operated browser interaction. They are not manual human feel testing.
