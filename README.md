@@ -1,31 +1,24 @@
-# Sweep
+# After Hours
 
-[Play Sweep](https://dumb-tony.github.io/sweep/) — one filthy floor, one broom, no rush.
+[Play After Hours](https://dumb-tony.github.io/sweep/) — restore a forgotten arcade, one corner at a time.
 
-- Read [GDD.md](GDD.md) for the comprehensive design and scope.
-- Read [docs/PROTOTYPE_M1.md](docs/PROTOTYPE_M1.md) for the standalone HTML mechanic test and acceptance gates.
-- Record actual test evidence in [docs/PLAYTEST_LOG.md](docs/PLAYTEST_LOG.md).
-- Design provenance remains in local source-basis notes, excluded from Git because they contain private conversation excerpts.
+The project has pivoted from Sweep to arcade restoration. The first playable slice includes moving three cabinets into back storage, sweeping and scrubbing, restoring floors, choosing wall and cabinet colors, solving a wiring puzzle, and playing the machine you repaired. Progress and the arcade best score save locally.
 
-Intended working directory: C:\GPT_DEV\sweep
+See [the active design and scope](docs/ARCADE_PIVOT.md). This is one room and one playable cabinet, not the full planned renovation campaign. Cleaning currently uses stroke coverage; richer physical interactions, additional repairs, upgrades, and reopening nights are future work.
 
-M1 is implemented. Gather 80 leaves and 20 cans into the bin, clean 90% of eligible weight, and push the keys into their tray. The offline HTML includes start, play, result and restart. Engineering checks do not establish that sweeping feels satisfying: the five fresh-player test remains pending. Do not expand into M2 until the gates are reviewed.
+The original Sweep game is preserved at [the legacy prototype](https://dumb-tony.github.io/sweep/legacy/) and in `prototypes/m1/`. Its original GDD and playtest records remain historical references.
 
-## Play offline
+## Development
 
-Download [prototypes/m1/index.html](prototypes/m1/index.html) and open it in a modern desktop browser. Code, geometry and generated sound are embedded. No build, accounts, external assets or network access is needed. Settings and records fall back to memory if storage is blocked.
+No dependencies or build step. Run `node tests/serve.cjs` and open http://127.0.0.1:4175. The preview serves only the three arcade game files.
 
-Move the pointer or use WASD / arrows. Hold click or Shift for pressure, Space to lift, Q/E to rotate and F to restore automatic alignment. Escape pauses; R restarts. Visible pressure/lift buttons latch those actions. Comfort settings include response speed, smoothing, input toggles, contrast, mute and reduced effects. Desktop input is the primary test target.
-
-## Developer checks
-
-Node.js is needed only for these tests and optional preview:
+Checks:
 
 ```text
+node tests/arcade.cjs
 node tests/physics.cjs
 node tests/controls.cjs
 node tests/motion.cjs
-node tests/serve.cjs
 ```
 
-The preview serves only the game at http://127.0.0.1:4175. Test outputs stay in ignored `artifacts/`. F2 toggles diagnostics. GitHub Pages deploys only the standalone HTML through the checked-in workflow. See [contact and tuning notes](prototypes/m1/README.md).
+GitHub Actions runs the new restoration checks and the preserved Sweep regressions before publishing to GitHub Pages. Deployment includes only the arcade game assets and the legacy standalone HTML. Private source-basis notes and diagnostic artifacts are excluded from Git.

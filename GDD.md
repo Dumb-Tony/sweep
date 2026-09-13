@@ -1,3 +1,5 @@
+ > Historical Sweep design. The active project pivot is documented in [After Hours](docs/ARCADE_PIVOT.md).
+
 # Sweep — Game Design Document
 
 ## Elevator pitch
