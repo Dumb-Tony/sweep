@@ -1,3 +1,5 @@
+> The current playable implementation is now [fully 3D](ARCADE_3D.md). This document records the broader pivot and its initial flat prototype.
+
 # After Hours — active direction
 
 Approved 13 September 2026: pivot Sweep into a cozy abandoned-arcade restoration game. Working title: After Hours. Keep the existing repository and public URL. The previous Sweep prototype remains available under `/legacy/`.
