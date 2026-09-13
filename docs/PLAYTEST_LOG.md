@@ -1,5 +1,26 @@
 # Sweep — Playtest log
 
+## 2026-09-13 — M1.1 control repair / physics 2
+
+User report: controls initially worked reasonably, then became erratic during play. Follow-up narrowed the trigger to mouse → keyboard → mouse, affecting movement, orientation, and pressure/lift. This is a real usability failure report; the earlier smoke checks did not establish sustained control quality.
+
+Reproduced two specific failures against the previous code before repairing it:
+
+- A five-unit horizontal stroke left the head frozen partway through alignment because rotation only updated while translation exceeded 12 units/s. The regression asserted perpendicular alignment after one second and failed on the old build. The head now remembers the last stroke heading and completes its bounded turn even at rest.
+- Thirty tiny wheel events accumulated a hidden 4.5-radian manual offset. Scrolling no longer changes steering. Q/E remain deliberate rotation controls, the current offset is visible, and F / the Angle button restores automatic alignment without losing the run.
+
+Also made input sampling side-effect free (rendering/keyboard sampling no longer rewrites pointer targets), isolated movement ownership from pressure/lift modifiers, normalized angle offsets, and clear/reconcile mouse pressure on pointer-up, lost capture and actual button state. Physics version 2 uses a separate record key.
+
+Validation so far: all nine physics tests plus six lifecycle and seven new controls checks passed. The controls soak alternated mouse/keyboard, pressure/lift, Q rotation/F reset, wheel input, pointer exit/reentry and six focus pauses for 599.983 simulated seconds. This soak retained the keys but removed other debris to isolate input state; it is not a dense-pile performance test. Separately the 200-debris wall stress ran 120 seconds with no escapes or duplicate accounting (local VM p95 4.464 ms/step, max 6.559 ms).
+
+The full physical cleanup route completed in 248.13 simulated seconds: 110/120 weight, 92 debris pieces, keys recovered, 60 strokes, 2,930 points. The 30/60/120 FPS replays matched exactly (weight 58, score 1,770 after 7,200 fixed steps). These are scripted checks, not human feel results. A longer agent-operated browser play session is recorded below after completion. The five-player exit gate remains pending.
+
+### Exact handoff regression and browser play
+
+The follow-up prompted an additional failing regression: mouse sweep, keyboard A/Q/Space/Shift, then mouse movement before all releases arrive. The old keyboard movement continued overriding the returning mouse. After the repair, pointer input explicitly takes ownership, cancels old keyboard commands, clears lift/pressure latches and restores automatic angle. This intentionally starts mouse control in a neutral state; reapply lift/pressure after changing devices. F now resets all broom controls while preserving cleanup.
+
+Agent-operated Chromium play at 1280×720 on the previously recorded PC: the first repair was played across multiple rows for a 4:52 session, reaching 66% cleanup with 33 bodies remaining, repeated lifted repositioning, pressure deliveries, scrolling and pause. This session included idle/inspection intervals and did not complete the floor or prove human feel. After the final handoff fix, a fresh browser session explicitly switched mouse → keyboard → mouse with lift/pressure enabled. The HUD reported keyboard ownership followed by pointer ownership, zero angle offset, and both latches off; mouse contact resumed. Full completion remains separately covered by the 248.13-second physical simulation route. No five-player pass is claimed.
+
 ## 2026-09-13 — M1 implementation / fixed mess / physics 1
 
 **Decision: iterate within M1; ready for human testing, not a passed enjoyment gate.** No fresh human testers participated. All observations below are automated simulation, DOM-stub integration, or agent-operated browser interaction. They are not manual human feel testing.

@@ -6,9 +6,9 @@ Open `index.html` directly to play offline. No build, fetch, fonts, CDN, engine 
 
 80 leaves weigh 1 each; 20 cans weigh 2 each. Keys never count toward cleanliness. Completion requires 108/120 weight and key recovery. Bin and tray accept a piece only when its entire collision body is inside, moving below 28 world units/second continuously for 0.3 seconds. Keys entering the bin return visibly to the floor below their tray. A comfort-panel action also returns unrecovered keys there.
 
-Pointer positions scale into the same 960×640 world at every display size. The 112-unit broom head has a 7-unit collision radius. Orientation follows stroke direction with bounded angular speed; Q/E and the wheel adjust its angle offset. Opposite strokes keep the same head axis. Space lifts for repositioning. Left click or Shift adds pressure. WASD/arrows move in world space, including normalized diagonals. Visible buttons toggle pressure/lift; optional key toggles remove the need to hold a key. Leaving the canvas stops pointer travel and lifts contact; reentry remains speed capped. Focus loss pauses and clears held and latched controls.
+Pointer positions scale into the same 960×640 world at every display size. The 112-unit broom head has a 7-unit collision radius. Orientation follows stroke direction with bounded angular speed; Q/E adjust its visible angle offset; F or the Angle button restores automatic alignment. The wheel no longer rotates the broom. Opposite strokes keep the same head axis. Space lifts for repositioning. Left click or Shift adds pressure. WASD/arrows move in world space, including normalized diagonals. Visible buttons toggle pressure/lift; optional key toggles remove the need to hold a key. Leaving the canvas stops pointer travel and lifts contact; reentry remains speed capped. Focus loss pauses and clears held and latched controls.
 
-## Contact model, physics version 1
+## Contact model, physics version 2
 
 - Fixed 1/120-second simulation, at most eight catch-up steps per rendered frame. Excess backlog is discarded. Presentation uses requestAnimationFrame.
 - Maximum speed starts at 500 world units/second; pressure retains the proposed 0.7× speed cap and 1.5× normal contact gain. Response speed scales the cap from 0.5× to 1.5×. Independent smoothing ranges from 0 to 120 ms, initially 30 ms.
@@ -28,4 +28,10 @@ Browser inspection prompted a viewport-relative floor size and focus without aut
 
 F2 reports rendered FPS, p95 frame work, frame/simulation cost, simulation time, active bodies, broom speed/angle, contacts, strokes, state, accumulator, viewport, canvas size and browser version. The 120-frame rolling cost measures game JavaScript work, not GPU presentation latency. High FPS on this machine is not a minimum-device promise.
 
-Settings and best elapsed time use `sweep.m1.physics1.v1` in localStorage with try/catch and type/range validation. Reset clears that key. No cross-version comparisons or replays are persisted. Sound is synthesized after interaction and rate limited. Audio quality, pointer feel, touch comfort, assist comparability and the fresh-player exit gates need human testing. Best time is exploratory, with no competitive leaderboard.
+Settings and best elapsed time use `sweep.m1.physics2.v1` in localStorage with try/catch and type/range validation. Reset clears that key. No cross-version comparisons or replays are persisted. Sound is synthesized after interaction and rate limited. Audio quality, pointer feel, touch comfort, assist comparability and the fresh-player exit gates need human testing. Best time is exploratory, with no competitive leaderboard.
+
+### M1.1 control repair
+
+Short strokes used to stop steering as soon as translation fell below 12 units/s, freezing the head partway through a turn. Physics 2 remembers the last stroke heading and completes the bounded turn at rest. Rotation offsets are normalized, shown in the controls, and resettable with F without losing cleanup. Ordinary wheel events no longer change the offset. Input reads are pure; keyboard steering no longer overwrites the pointer target. Mouse button state is reconciled on movement, pointer-up, and lost capture to avoid stuck pressure. Modifier keys do not take over movement ownership. The new storage key prevents comparing old handling records with the repaired model.
+
+Mouse movement after keyboard use explicitly cancels the old keyboard commands, resets the manual angle, and releases pressure/lift latches. Reapply lift or pressure after this handoff. F also releases all controls, without restarting the floor. A dedicated regression covers returning to mouse when keyboard key-up events have not arrived.

@@ -15,7 +15,7 @@ M1 is implemented. Gather 80 leaves and 20 cans into the bin, clean 90% of eligi
 
 Download [prototypes/m1/index.html](prototypes/m1/index.html) and open it in a modern desktop browser. Code, geometry and generated sound are embedded. No build, accounts, external assets or network access is needed. Settings and records fall back to memory if storage is blocked.
 
-Move the pointer or use WASD / arrows. Hold click or Shift for pressure, Space to lift, Q/E or wheel to rotate. Escape pauses; R restarts. Visible pressure/lift buttons latch those actions. Comfort settings include response speed, smoothing, input toggles, contrast, mute and reduced effects. Desktop input is the primary test target.
+Move the pointer or use WASD / arrows. Hold click or Shift for pressure, Space to lift, Q/E to rotate and F to restore automatic alignment. Escape pauses; R restarts. Visible pressure/lift buttons latch those actions. Comfort settings include response speed, smoothing, input toggles, contrast, mute and reduced effects. Desktop input is the primary test target.
 
 ## Developer checks
 
@@ -23,7 +23,7 @@ Node.js is needed only for these tests and optional preview:
 
 ```text
 node tests/physics.cjs
-node tests/lifecycle.cjs
+node tests/controls.cjs
 node tests/serve.cjs
 ```
 
