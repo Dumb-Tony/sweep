@@ -1,0 +1,5 @@
+docs/SOURCE_BASIS.md
+artifacts/
+node_modules/
+*.log
+.DS_Store

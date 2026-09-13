@@ -1,0 +1,31 @@
+// Pure simulation tests; these are not human playtests or browser input automation.
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),{performance}=require('node:perf_hooks');
+const html=fs.readFileSync(__dirname+'/../prototypes/m1/index.html','utf8');
+const context={module:{exports:{}}};vm.runInNewContext(html.match(/<script id="simulation">([\s\S]*?)<\/script>/)[1],context);const C=context.module.exports;
+const reports=[];function test(name,fn){const result=fn();reports.push({name,...result});console.log('PASS',name,result||'');}
+function input(x,y,more={}){return{x,y,smoothing:.03,sensitivity:1,...more};}function run(s,n,i){for(let k=0;k<n;k++)C.step(s,typeof i==='function'?i(k):i);}
+function valid(s){for(const p of s.pieces){assert(Number.isFinite(p.x)&&Number.isFinite(p.y)&&Number.isFinite(p.vx)&&Number.isFinite(p.vy));assert(p.x>=24+p.r-1e-8&&p.x<=936-p.r+1e-8);assert(p.y>=24+p.r-1e-8&&p.y<=616-p.r+1e-8);}assert.equal(s.weight,s.pieces.filter(p=>p.disposed).reduce((a,p)=>a+p.weight,0));assert.equal(s.disposed,s.pieces.filter(p=>p.disposed&&p.type!=='keys').length);}
+test('Initial mess and clean reset',()=>{for(let j=0;j<50;j++){const s=C.create();assert.equal(s.pieces.length,101);assert.equal(s.total,120);assert.equal(s.pieces.filter(p=>p.type==='leaf').length,80);assert.equal(s.pieces.filter(p=>p.type==='can').length,20);assert.equal(s.weight,0);assert.equal(s.group,null);assert(s.pieces.every(p=>!p.vx&&!p.vy&&!p.disposed));}return{resets:50};});
+test('No vacuum; lift passes through without contact',()=>{const s=C.create(0);s.pieces=[C.body(0,'leaf',400,300)];s.total=1;s.broom.x=100;s.broom.y=300;run(s,150,input(650,300,{lift:true}));assert.equal(s.pieces[0].x,400);assert.equal(s.contacts,0);});
+test('Pressure speed cap and direct physical contact',()=>{const a=C.create(0),b=C.create(0);a.pieces=[];b.pieces=[];C.step(a,input(900,560));C.step(b,input(900,560,{pressure:true}));assert(Math.abs(b.broom.vx/a.broom.vx-.7)<1e-9);const s=C.create(0);s.pieces=[C.body(0,'leaf',300,350)];s.total=1;s.broom.x=200;s.broom.y=350;s.broom.a=Math.PI/2;run(s,100,input(550,350,{pressure:true}));assert(s.pieces[0].x>500);valid(s);});
+test('Bin: full entry, low speed, dwell, exactly once',()=>{const s=C.create(0);s.pieces=[C.body(0,'leaf',807,300)];s.total=1;run(s,100,input(180,560,{lift:true}));assert.equal(s.weight,0);s.pieces[0].x=870;run(s,35,input(180,560,{lift:true}));assert.equal(s.weight,0);run(s,2,input(180,560,{lift:true}));assert.equal(s.weight,1);run(s,500,input(180,560,{lift:true}));assert.equal(s.weight,1);assert.equal(s.score,10);});
+test('Salvage rejection and recovery; debris never counts in tray',()=>{const s=C.create(0);s.pieces[0].x=870;s.pieces[0].y=300;C.step(s,input(180,560,{lift:true}));assert.equal(s.recovered,false);assert.equal(s.pieces[0].x,730);s.pieces[0].x=750;s.pieces[0].y=65;run(s,40,input(180,560,{lift:true}));assert(s.recovered);assert.equal(s.weight,0);});
+test('Combo unique IDs cannot farm repeated contact',()=>{const s=C.create(0);s.pieces=[C.body(0,'leaf',300,350)];s.total=1;s.broom.x=270;s.broom.y=350;s.broom.a=Math.PI/2;run(s,120,k=>input(300+k*.3,350,{pressure:true}));assert(s.group.ids.size<=1);s.pieces[0].x=870;s.pieces[0].y=300;s.pieces[0].vx=0;s.pieces[0].vy=0;run(s,40,input(s.broom.x,s.broom.y,{lift:true}));assert.equal(s.score,10);});
+function route(s,t){const stage=Math.floor(t/5)%12,phase=t%5;let x,y,lift=false; // Full-width, overlapping horizontal passes, then funnel down the bin-side wall.
+if(stage<8){const row=155+stage*54;if(phase<1){x=60;y=row;lift=true;}else{x=phase<4?60+(phase-1)/3*810:870;y=row;}}
+else if(stage===8){if(phase<1){x=870;y=565;lift=true;}else{x=870;y=565-(phase-1)/4*285;}}
+else if(stage===9){if(phase<1){x=870;y=120;lift=true;}else{x=870;y=120+(phase-1)/4*160;}}
+else {x=730;y=127;lift=true;}
+return input(x,y,{lift,pressure:true});}
+test('30 / 60 / 120 FPS fixed-step replay',()=>{const results=[];for(const fps of [30,60,120]){const s=C.create();let acc=0,steps=0;for(let f=0;f<fps*60;f++){acc+=1/fps;let n=0;while(acc+1e-10>=C.DT&&n<8){C.step(s,route(s,steps*C.DT));acc-=C.DT;steps++;n++;}}valid(s);results.push({fps,weight:s.weight,score:s.score,x:s.pieces[0].x,y:s.pieces[0].y,steps});}for(const r of results.slice(1))assert.deepEqual({...r,fps:30},results[0]);return{results};});
+test('200-piece wall pile, cursor crossings and rapid rotation for 120 seconds',()=>{const s=C.create(200);for(let k=0;k<200;k++){s.pieces[k].x=38+(k%10)*12;s.pieces[k].y=220+Math.floor(k/10)*12;}const samples=[];for(let k=0;k<14400;k++){const begin=performance.now();C.step(s,input(k%240<120?24:936,k%480<240?24:616,{pressure:k%360<180,rotate:1}));samples.push(performance.now()-begin);if(k%120===0)valid(s);}valid(s);samples.sort((a,b)=>a-b);return{seconds:120,pieces:s.pieces.length,p95StepMs:+samples[Math.floor(samples.length*.95)].toFixed(3),maxStepMs:+samples.at(-1).toFixed(3)};});
+// A geometry route uses real broom contact throughout; no object teleports.
+function move(s,x,y,lift=false,seconds=2,pressure=true){run(s,Math.ceil(seconds*120),input(x,y,{lift,pressure}));}
+test('Complete physical cleanup and key delivery route',()=>{const s=C.create();for(let round=0;round<5&&!s.complete;round++){
+for(let row=155;row<=587;row+=48){move(s,50,row,true,2);move(s,892,row,false,3);move(s,892,row,true,.6);}move(s,870,587,true,2);move(s,870,310,false,2);move(s,870,110,true,2);move(s,870,310,false,2);
+// Target remaining pieces one by one, lift behind them, and physically route to the bin.
+for(const p of s.pieces.filter(p=>!p.disposed&&p.type!=='keys')){const py=C.clamp(p.y,90,575);move(s,Math.max(32,p.x-38),py,true,1.8);move(s,889,py,false,3);move(s,875,py+(py>330?50:-50),true,1);move(s,875,330,false,1.5);}
+// Keys can be explicitly returned after an accidental bin delivery, as in the public UI.
+C.recover(s);move(s,730,170,true,1);move(s,730,57,false,1);move(s,600,150,true,1);valid(s);
+}assert(s.complete,JSON.stringify({weight:s.weight,recovered:s.recovered,keys:s.pieces.at(-1)}));return{time:+s.time.toFixed(2),weight:s.weight,total:s.total,disposed:s.disposed,recovered:s.recovered,strokes:s.strokes,score:s.score};});
+fs.mkdirSync(__dirname+'/../artifacts',{recursive:true});fs.writeFileSync(__dirname+'/../artifacts/physics-results.json',JSON.stringify(reports,null,2));
