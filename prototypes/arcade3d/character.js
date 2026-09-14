@@ -101,5 +101,5 @@ export function createCharacter(art) {
     if(crouch){chest.rotation.x+=crouch*.22;for(const leg of legs){leg.hip.rotation.x-=crouch*.7;leg.knee.rotation.x+=crouch*1.35;leg.foot.rotation.x-=crouch*.65;}reach(arms[1],[.32,-.34,.43]);}
     return crouch;
   }
-  return {root,animate};
+  return {root,animate,rightHand:arms[1].wrist,leftHand:arms[0].wrist};
 }

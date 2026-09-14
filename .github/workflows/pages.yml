@@ -29,6 +29,7 @@ jobs:
           node tests/arcade.cjs
           node tests/arcade3d.cjs
           node tests/character.mjs
+          node tests/tools.mjs
           node tests/mouse-look.mjs
           node --check prototypes/arcade3d/scene.js
           node --check prototypes/arcade3d/art.js

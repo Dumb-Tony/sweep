@@ -14,3 +14,11 @@ Completion uses the individual work cells, not their average. A fully completed 
 - Browser checks of Find next patch, remaining counts, automatic outlines and tool rendering. No browser warnings or errors observed.
 
 Browser testing used prepared local checkpoints and actual UI input. It was not a continuous manual playthrough. Full routes were exercised by the deterministic simulation. Run `node tests/serve-checkpoints.cjs` to reproduce local browser checkpoints on port 4176; use `?step=store`, `sweep`, `mop`, `lift`, `dispose`, `lay`, `strip`, `patch`, `paint`, `clean`, `repair`, `return` or `play`. This server is local-only and its fixture saves are separate from the public game's origin.
+
+## Hand tools and machine detailing
+
+The active tool tracks the right hand in world space, with its grip aligned to the animated wrist and its working head resting outside the character silhouette. This keeps long-handled and short-handled tools attached through walking, crouching and wall poses.
+
+Machine cleaning now requires three material passes per dirty area: dust, scrub and polish. The selected pass is explicit, incorrect treatments give feedback, and the canvas replaces the system pointer with a rendered hand holding a folded rag. Browser QA covered a wrong pass, all three correct passes, the hand cursor, completion, and return to the wiring panel.
+
+The room pass adds ceiling coffers, aged-brass wall trim, warm wall sconces, a brass entrance threshold and workshop signage. These elements use real geometry and lights, so they remain consistent from both chase and room cameras.

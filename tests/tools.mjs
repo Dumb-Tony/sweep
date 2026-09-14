@@ -1,0 +1,7 @@
+import assert from 'node:assert/strict';
+import * as T from '../prototypes/arcade3d/vendor/three.module.min.js';
+import {createTools} from '../prototypes/arcade3d/tools.js';
+const art={surfaceMat:color=>new T.MeshStandardMaterial({color}),box(parent,x,y,z,w,h,d,material){const mesh=new T.Mesh(new T.BoxGeometry(w,h,d),material);mesh.position.set(x,y,z);parent.add(mesh);return mesh;},tube(parent,points,r,material){const curve=new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p)));const mesh=new T.Mesh(new T.TubeGeometry(curve,4,r,4),material);parent.add(mesh);return mesh;}};
+const kit=createTools(art),names=['broom','mop','pry','setter','patch','scraper','roller'];
+assert.deepEqual(Object.keys(kit.models),names);for(const [stage,floorPhase,wallPhase,name] of [[1,0,0,'broom'],[2,0,0,'mop'],[3,0,0,'pry'],[3,2,0,'setter'],[4,0,0,'scraper'],[4,0,1,'patch'],[4,0,2,'roller']]){kit.select({stage,floorPhase,wallPhase});assert.equal(kit.root.userData.tool,name);assert.deepEqual(names.filter(n=>kit.models[n].visible),[name]);}
+const hand=new T.Group();hand.position.set(.2,.8,.1);hand.rotation.z=.5;hand.add(kit.root);kit.root.position.set(0,-.86,.04);hand.updateMatrixWorld(true);const held=new T.Vector3();kit.root.getWorldPosition(held);hand.position.x+=.3;hand.updateMatrixWorld(true);const moved=new T.Vector3();kit.root.getWorldPosition(moved);assert(Math.abs(moved.x-held.x-.3)<1e-6,'tool follows hand joint');console.log('PASS seven distinct tools and wrist-joint attachment');

@@ -24,6 +24,7 @@ export function createTools(art){
   const roller=group('roller');bar(roller,[0,.08,-.18],[0,.77,-.42],.024,wood);bar(roller,[0,.57,-.35],[0,.79,-.43],.03,rubber);
   art.tube(roller,[[0,.09,-.18],[0,.06,.04],[.27,.06,.04],[.27,.06,.20],[0,.06,.20]],.012,steel);
   bar(roller,[-.23,.06,.20],[.23,.06,.20],.07,cloth);for(const x of [-.235,.235])bar(roller,[x-.008,.06,.20],[x+.008,.06,.20],.045,teal);
+  const grips={broom:.9,mop:.9,pry:.82,setter:.15,patch:.15,scraper:.28,roller:.68};
   function select(s){const name=s.stage===1?'broom':s.stage===2?'mop':s.stage===3?(s.floorPhase===0?'pry':s.floorPhase===2?'setter':null):s.stage===4?['scraper','patch','roller'][s.wallPhase]:null;for(const [key,g] of Object.entries(models))g.visible=key===name;root.userData.tool=name;}
-  return {root,select,models};
+  return {root,select,models,grip:()=>grips[root.userData.tool]||0};
 }
