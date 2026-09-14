@@ -4,7 +4,7 @@ The request for this release is presentation: textures, lighting, shadows, model
 
 ## Art direction
 
-A worn neighborhood arcade in cool late-night surroundings, warmed by practical workshop lamps, old signage, brass accents, and a paper restoration journal. The room remains a stylized 3D cutaway with the established orbit and follow cameras.
+A worn neighborhood arcade in cool late-night surroundings, warmed by practical workshop lamps, old signage, brass accents, and a paper restoration journal. The room supports both its stylized 3D cutaway and the newer over-the-shoulder view.
 
 ## Rendering and assets
 

@@ -4,11 +4,11 @@ Requested 13 September 2026: replace the flat drag-and-drop arcade with a fully 
 
 ## Implemented
 
-Real WebGL 2 geometry with perspective rendering, depth, dynamic shadows, lighting, camera orbit/zoom, and an animated third-person character. A main arcade floor and back workshop are connected by a traversable doorway. Three modelled cabinets have control panels, joysticks, trim, marquees, and screens. Workshop furniture, paint tins, shelving, signs, and storage bays furnish the space.
+Real WebGL 2 geometry with perspective rendering, depth, dynamic shadows, lighting, an over-the-shoulder camera, and an animated third-person character. A main arcade floor and back workshop are connected by a traversable doorway. Three modelled cabinets have control panels, joysticks, trim, marquees, and screens. Workshop furniture, paint tins, shelving, signs, and storage bays furnish the space.
 
 Walk with camera-relative WASD/arrows or click-to-walk. Click a cabinet to approach and interact; E loads/parks the hand truck, opens the service panel, or plays a repaired machine. Hauling follows the character's traversed path so the cabinet does not cut through corners. Solid cabinet and wall collisions, wider planned paths when hauling, acceleration/deceleration, keyboard takeover of click paths, blur clearing, and serialized hauling trails handle control transitions.
 
-Hold Space while walking to sweep, scrub, or lay flooring within physical reach. A Work toggle supports touch and click walking. Q/R or right-drag orbit the camera; scroll changes distance. Room and follow camera modes are available. Near camera-side walls and the partition fade for visibility.
+Hold Space while walking to sweep, mop, remove flooring, install flooring, strip walls, repair plaster, or paint within physical reach. A Work toggle supports touch and click walking. Q/R or right-drag turns the shoulder view; scroll changes distance. A room overview remains available. The shoulder camera retracts around walls and fixtures.
 
 The existing seven-step first-corner loop, circuit puzzle, Star Signal mini-game, finish choices, and local progress persist in the 3D version. The 3D save uses a separate key, preserving older 2D progress. The prior arcade lives under `/flat/`; the original Sweep under `/legacy/`.
 
