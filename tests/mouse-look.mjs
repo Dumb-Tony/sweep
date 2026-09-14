@@ -13,6 +13,13 @@ look.request();allowed=false;move(100,100);assert.equal(moves.length,1);look.rel
 look.request();assert(!look.locked(),'menus cannot acquire');allowed=true;
 element.requestPointerLock=()=>Promise.reject(new Error('browser cooldown'));
 look.request();await Promise.resolve();await Promise.resolve();assert.equal(errors,1);
+assert(look.active(),'rejected native lock enables free look');
+element.getBoundingClientRect=()=>({left:0,right:1000});
+const freeMove=(x,y)=>{const e=Object.assign(new Event('mousemove'),{clientX:x,clientY:y});Object.defineProperty(e,'target',{value:element});doc.dispatchEvent(e);};
+freeMove(400,300);const before=moves.length;freeMove(420,310);
+assert.deepEqual(moves.at(-1),[20,10]);assert.equal(moves.length,before+1,'no button needed');
+freeMove(990,310);look.update(.02);assert.deepEqual(moves.at(-1),[9.6,0]);
+look.release();assert(!look.active());const stopped=moves.length;freeMove(500,300);look.update(.02);assert.equal(moves.length,stopped);
 // A pending acquisition must not recapture after a menu has opened.
 element.requestPointerLock=()=>undefined;look.request();look.release();doc.pointerLockElement=element;doc.dispatchEvent(new Event('pointerlockchange'));assert(!look.locked());
 assert(states.includes(true)&&states.includes(false));
