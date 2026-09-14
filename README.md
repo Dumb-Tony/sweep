@@ -2,7 +2,9 @@
 
 [Play After Hours in 3D](https://dumb-tony.github.io/sweep/) — walk into a forgotten arcade and bring it back to life.
 
-The arcade is now a fully 3D environment: an animated third-person character, orbit/follow cameras, modelled cabinets and tools, shadows, a back workshop, a real doorway, and collision-constrained cabinet hauling. Walk with WASD/arrows or click the floor. E interacts; hold Space to work; right-drag or Q/R orbits; scroll zooms. In-world labels let you approach cabinets and park in storage without dragging objects across the screen.
+The visual overhaul adds shaped cabinets with original artwork, curved reflective CRTs, textured floors and walls, warm practical lighting, contact shadows, workshop details, and a paper restoration journal. See [visual release notes](docs/VISUAL_OVERHAUL.md).
+
+The arcade is a fully 3D environment: an animated third-person character, orbit/follow cameras, modelled cabinets and tools, shadows, a back workshop, a real doorway, and collision-constrained cabinet hauling. Walk with WASD/arrows or click the floor. E interacts; hold Space to work; right-drag or Q/R orbits; scroll zooms. In-world labels let you approach cabinets and park in storage without dragging objects across the screen.
 
 The first-corner restoration loop includes storing three cabinets, sweeping and scrubbing the floor, choosing finishes, repairing Star Signal, hauling it back, and playing it. Progress saves locally in a separate 3D save. See [the 3D implementation and validation notes](docs/ARCADE_3D.md) and [the broader arcade design](docs/ARCADE_PIVOT.md).
 
