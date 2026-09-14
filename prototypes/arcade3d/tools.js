@@ -3,8 +3,8 @@ import * as T from './vendor/three.module.min.js';
 // Purpose-built tools with thin working edges, separate fittings and grips.
 export function createTools(art){
   const root=new T.Group(),models={};
-  const material=(color,metalness=0,roughness=.65)=>Object.assign(art.surfaceMat(color,metalness?'metal':'paint').clone(),{metalness,roughness});
-  const steel=material('#a9b8bb',.85,.27),rubber=material('#26383b',0,.92),wood=material('#b48a50'),brass=material('#b6955a',.6,.4),cloth=material('#d8d3b9',0,1),teal=material('#4e8582');
+  const material=(color,metalness=0,roughness=.65,kind=metalness?'metal':'paint')=>Object.assign(art.surfaceMat(color,kind).clone(),{metalness,roughness});
+  const steel=material('#a9b8bb',.85,.27),rubber=material('#26383b',0,.92),wood=material('#b48a50',0,.7,'wood'),brass=material('#b6955a',.6,.4),cloth=material('#d8d3b9',0,1,'fabric'),teal=material('#4e8582');
   function group(name){const g=new T.Group();g.name=name;root.add(g);models[name]=g;return g;}
   function bar(g,a,b,r,m){const p=new T.Vector3(...a),q=new T.Vector3(...b),v=q.clone().sub(p);const mesh=new T.Mesh(new T.CylinderGeometry(r,r,v.length(),12),m);mesh.position.copy(p).add(q).multiplyScalar(.5);mesh.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),v.normalize());mesh.castShadow=true;g.add(mesh);return mesh;}
   function box(g,x,y,z,w,h,d,m,r=.008){return art.box(g,x,y,z,w,h,d,m,Math.min(r,w/3,h/3,d/3));}

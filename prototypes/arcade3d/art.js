@@ -12,10 +12,14 @@ export function createArt(scene, renderer) {
   const [surface,sg]=canvas();sg.fillStyle='#a8a39b';sg.fillRect(0,0,512,512);noise(sg,512,512,45000,.2);
   for(let i=0;i<70;i++){sg.strokeStyle=`rgba(45,42,37,${random()*.15})`;sg.lineWidth=random()*2;sg.beginPath();const y=random()*512;sg.moveTo(0,y);sg.bezierCurveTo(150,y+15,400,y-10,512,y+5);sg.stroke();}
   const grain=texture(surface,false);grain.wrapS=grain.wrapT=T.RepeatWrapping;
+  const [fabricC,fg]=canvas(256);fg.fillStyle='#888';fg.fillRect(0,0,256,256);for(let i=0;i<256;i+=4){fg.fillStyle=i%8?'#aaa':'#666';fg.fillRect(i,0,1,256);fg.fillRect(0,i,256,1);}noise(fg,256,256,9000,.09);const fabricMap=texture(fabricC,false);fabricMap.wrapS=fabricMap.wrapT=T.RepeatWrapping;fabricMap.repeat.set(5,5);
+  const [plasterC,pg0]=canvas(256);pg0.fillStyle='#aaa';pg0.fillRect(0,0,256,256);for(let i=0;i<2400;i++){const a=40+random()*30;pg0.fillStyle=`rgb(${a},${a},${a})`;pg0.beginPath();pg0.arc(random()*256,random()*256,.4+random()*2,0,7);pg0.fill();}const plasterMap=texture(plasterC,false);plasterMap.wrapS=plasterMap.wrapT=T.RepeatWrapping;plasterMap.repeat.set(3,3);
+  const [scratchC,scg]=canvas(256);scg.fillStyle='#777';scg.fillRect(0,0,256,256);for(let i=0;i<180;i++){scg.strokeStyle=`rgba(230,230,230,${.05+random()*.18})`;scg.lineWidth=.4;scg.beginPath();scg.moveTo(random()*256,random()*256);scg.lineTo(random()*256,random()*256);scg.stroke();}const scratchMap=texture(scratchC,false);scratchMap.wrapS=scratchMap.wrapT=T.RepeatWrapping;
   const materialCache=new Map();
   function surfaceMat(color,kind='paint'){
     const key=color+kind;if(materialCache.has(key))return materialCache.get(key);
-    const m=new T.MeshStandardMaterial({color,roughness:kind==='metal'?.4:kind==='tile'?.43:.84,metalness:kind==='metal'?.65:0,bumpMap:grain,bumpScale:kind==='tile'?.015:.035,roughnessMap:grain});materialCache.set(key,m);return m;
+    const detail=kind==='fabric'?fabricMap:kind==='plaster'?plasterMap:kind==='metal'?scratchMap:grain;
+    const m=new T.MeshStandardMaterial({color,roughness:kind==='metal'?.34:kind==='skin'?.72:kind==='tile'?.43:kind==='wood'?.68:.84,metalness:kind==='metal'?.68:0,bumpMap:detail,bumpScale:kind==='fabric'?.012:kind==='plaster'?.022:kind==='skin'?.006:kind==='tile'?.015:.028,roughnessMap:detail});materialCache.set(key,m);return m;
   }
   function rounded(w,h,d,r=.035){const sh=new T.Shape(),x=-w/2,y=-h/2;sh.moveTo(x+r,y);sh.lineTo(x+w-r,y);sh.quadraticCurveTo(x+w,y,x+w,y+r);sh.lineTo(x+w,y+h-r);sh.quadraticCurveTo(x+w,y+h,x+w-r,y+h);sh.lineTo(x+r,y+h);sh.quadraticCurveTo(x,y+h,x,y+h-r);sh.lineTo(x,y+r);sh.quadraticCurveTo(x,y,x+r,y);const geo=new T.ExtrudeGeometry(sh,{depth:d-2*r,bevelEnabled:true,bevelSegments:2,steps:1,bevelSize:r*.45,bevelThickness:r,curveSegments:3});geo.translate(0,0,-d/2+r);return geo;}
   const unitBox=new T.BoxGeometry(1,1,1);

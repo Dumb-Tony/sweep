@@ -22,3 +22,11 @@ The active tool tracks the right hand in world space, with its grip aligned to t
 Machine cleaning now requires three material passes per dirty area: dust, scrub and polish. The selected pass is explicit, incorrect treatments give feedback, and the canvas replaces the system pointer with a rendered hand holding a folded rag. Browser QA covered a wrong pass, all three correct passes, the hand cursor, completion, and return to the wiring panel.
 
 The room pass adds ceiling coffers, aged-brass wall trim, warm wall sconces, a brass entrance threshold and workshop signage. These elements use real geometry and lights, so they remain consistent from both chase and room cameras.
+
+## Material, character and effects pass
+
+Fabric, plaster, scratched metal, wood, tile and skin now use separate generated detail maps and surface response. Restoration work emits task-specific particles: sweeping dust, mop droplets, flooring chips or setting dust, wall flakes and paint-colored flecks. Ambient light motes remain separate.
+
+The character's jacket and jeans use continuous tapered ring geometry, the face uses one capsule volume, and arm and leg segments use overlapping capsules at their joints. This removes the most visible sphere seams while preserving the existing procedural animation and hand anchors.
+
+Browser playtesting exercised particle emission and completion handoffs for sweeping, mopping, floor lifting, floor laying, wallpaper stripping, plaster patching and painting. Chase and room cameras were visually checked for the updated silhouette, held broom, materials and lighting. The browser console remained free of warnings and errors.

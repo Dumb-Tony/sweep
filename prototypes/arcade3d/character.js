@@ -5,18 +5,17 @@ import * as T from './vendor/three.module.min.js';
 export function createCharacter(art) {
   const root=new T.Group(), hips=new T.Group(), chest=new T.Group();
   root.add(hips); hips.position.y=.88; hips.add(chest); chest.position.y=.27;
-  const material=(color,roughness=.85)=>Object.assign(art.surfaceMat(color).clone(),{roughness,bumpScale:.003});
+  const material=(color,roughness=.85,kind='fabric')=>Object.assign(art.surfaceMat(color,kind).clone(),{roughness});
   const jacket=material('#487c7d'),darkJacket=material('#345f63'),seam=material('#8ca9a0');
-  const denim=material('#304453'),skin=material('#d6a281'),hair=material('#47352b');
-  const boot=material('#956f48'),sole=material('#313936'),glove=material('#d0bc90');
+  const denim=material('#304453'),skin=material('#d6a281',.72,'skin'),hair=material('#47352b',.92,'paint');
+  const boot=material('#956f48',.7,'wood'),sole=material('#313936'),glove=material('#d0bc90');
   const metal=material('#ad9b70',.4);
   function oval(parent,m,x,y,z,sx,sy,sz){const mesh=new T.Mesh(new T.SphereGeometry(1,20,16),m);mesh.position.set(x,y,z);mesh.scale.set(sx,sy,sz);mesh.castShadow=mesh.receiveShadow=true;parent.add(mesh);return mesh;}
   function rounded(parent,m,x,y,z,w,h,d,r=.025){return art.box(parent,x,y,z,w,h,d,m,Math.min(r,w*.45,h*.45,d*.45));}
   function joint(parent,x,y,z){const g=new T.Group();g.position.set(x,y,z);parent.add(g);return g;}
-  // Shaped shoulders, waist and jacket hem keep a human silhouette from behind.
-  const profile=[[.21,-.27],[.245,-.22],[.235,-.08],[.285,.16],[.25,.26],[.15,.31]];
-  const torso=new T.Mesh(new T.LatheGeometry(profile.map(([r,y])=>new T.Vector2(r,y)),28),jacket);
-  torso.scale.z=.73;torso.castShadow=torso.receiveShadow=true;chest.add(torso);
+  function shell(parent,rings,mat,segments=24){const pos=[],uv=[],idx=[];for(let j=0;j<rings.length;j++){const [y,rx,rz]=rings[j];for(let i=0;i<segments;i++){const a=i/segments*Math.PI*2;pos.push(Math.sin(a)*rx,y,Math.cos(a)*rz);uv.push(i/segments,j/(rings.length-1));}}for(let j=0;j<rings.length-1;j++)for(let i=0;i<segments;i++){const a=j*segments+i,b=j*segments+(i+1)%segments,c=(j+1)*segments+(i+1)%segments,d=(j+1)*segments+i;idx.push(a,b,d,b,c,d);}const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(pos,3));geo.setAttribute('uv',new T.Float32BufferAttribute(uv,2));geo.setIndex(idx);geo.computeVertexNormals();const mesh=new T.Mesh(geo,mat);mesh.castShadow=mesh.receiveShadow=true;parent.add(mesh);return mesh;}
+  // One continuous jacket shell carries the shoulder, chest, waist and hem.
+  const torso=shell(chest,[[-.3,.2,.145],[-.26,.25,.17],[-.12,.235,.17],[.08,.285,.185],[.2,.275,.18],[.28,.2,.145]],jacket);torso.name='continuous-jacket-shell';
   rounded(chest,darkJacket,0,-.235,0,.46,.08,.32);
   rounded(chest,seam,0,.03,.182,.014,.48,.013,.003);
   rounded(chest,darkJacket,-.13,.12,.177,.15,.14,.027,.015);
@@ -33,14 +32,13 @@ export function createCharacter(art) {
   const badge=new T.Mesh(new T.PlaneGeometry(.24,.12),new T.MeshStandardMaterial({map:tex,roughness:1}));
   badge.position.set(0,.025,-.195);badge.rotation.y=Math.PI;chest.add(badge);
   for(const side of [-1,1]){const fold=rounded(chest,darkJacket,side*.19,-.1,-.145,.012,.16,.018,.005);fold.rotation.z=side*.18;}
-  oval(hips,denim,0,-.05,0,.24,.18,.17);
+  shell(hips,[[-.22,.2,.15],[-.12,.245,.18],[.02,.25,.18],[.11,.22,.16]],denim);
   for(const side of [-1,1]){rounded(hips,denim,side*.125,-.075,-.164,.14,.14,.022,.016);rounded(hips,seam,side*.125,-.02,-.178,.11,.009,.009,.003);}
   rounded(hips,boot,0,.015,0,.45,.045,.34,.015);
   rounded(hips,metal,0,.018,.179,.075,.055,.018,.008);
   const neck=joint(chest,0,.31,0);oval(neck,skin,0,.025,0,.09,.09,.085);
   const head=joint(neck,0,.18,0);
-  oval(head,skin,0,0,.014,.166,.205,.16);
-  oval(head,skin,0,-.105,.058,.13,.107,.12);
+  const face=new T.Mesh(new T.CapsuleGeometry(.145,.12,10,24),skin);face.name='continuous-head';face.scale.set(1.04,1,.94);face.position.set(0,-.025,.018);face.castShadow=face.receiveShadow=true;head.add(face);
   for(const side of [-1,1]){
     oval(head,skin,side*.168,-.006,0,.035,.062,.03);
     oval(head,hair,side*.085,.006,.152,.032,.009,.008);
@@ -57,8 +55,8 @@ export function createCharacter(art) {
   const legs=[],arms=[];
   for(const side of [-1,1]){
     const hip=joint(hips,side*.13,-.09,0),knee=joint(hip,0,-.34,0);
-    oval(hip,denim,0,-.17,0,.111,.22,.115);
-    oval(knee,denim,0,-.14,0,.095,.19,.094);
+    const thigh=new T.Mesh(new T.CapsuleGeometry(.102,.19,8,16),denim);thigh.position.y=-.18;thigh.castShadow=true;hip.add(thigh);
+    const shin=new T.Mesh(new T.CapsuleGeometry(.088,.18,8,16),denim);shin.position.y=-.15;shin.castShadow=true;knee.add(shin);oval(knee,denim,0,0,0,.101,.105,.101);
     rounded(knee,darkJacket,0,-.27,0,.185,.045,.184,.014);
     const foot=joint(knee,0,-.30,.035);
     rounded(foot,boot,0,-.02,.045,.205,.18,.33,.055);
@@ -67,8 +65,8 @@ export function createCharacter(art) {
     for(let n=0;n<3;n++)rounded(foot,glove,0,.071,.012+n*.043,.13,.011,.011,.003);
     legs.push({hip,knee,foot,side});
     const shoulder=joint(chest,side*.275,.17,0),elbow=joint(shoulder,0,-.31,0),wrist=joint(elbow,0,-.29,0);
-    oval(shoulder,jacket,0,-.13,0,.105,.19,.105);
-    oval(elbow,jacket,0,-.105,0,.083,.15,.083);
+    const upperSleeve=new T.Mesh(new T.CapsuleGeometry(.095,.17,8,16),jacket);upperSleeve.position.y=-.15;upperSleeve.castShadow=true;shoulder.add(upperSleeve);
+    const foreSleeve=new T.Mesh(new T.CapsuleGeometry(.077,.15,8,16),jacket);foreSleeve.position.y=-.12;foreSleeve.castShadow=true;elbow.add(foreSleeve);oval(elbow,jacket,0,0,0,.09,.095,.09);
     rounded(elbow,darkJacket,0,-.23,0,.16,.085,.15,.024);
     oval(wrist,glove,0,-.05,.012,.072,.09,.052);
     oval(wrist,glove,-side*.055,-.025,.027,.024,.05,.03);

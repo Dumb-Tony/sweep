@@ -4,6 +4,8 @@ import {createCharacter} from '../prototypes/arcade3d/character.js';
 globalThis.document={createElement:()=>({getContext:()=>({fillRect(){},strokeRect(){},fillText(){}})})};
 const art={surfaceMat:color=>new T.MeshStandardMaterial({color}),box(parent,x,y,z,w,h,d,material){const mesh=new T.Mesh(new T.BoxGeometry(w,h,d),material);mesh.position.set(x,y,z);parent.add(mesh);return mesh;},tube(){},contact(){}};
 const model=createCharacter(art);
+assert(model.root.getObjectByName('continuous-jacket-shell'),'character has one tapered jacket silhouette');
+assert(model.root.getObjectByName('continuous-head'),'character has one continuous head volume');
 const positions=[];
 for(const state of [{speed:0},{speed:4.2},{speed:2.8,hauling:true},{speed:0,tool:true,working:true},{speed:0,tool:true,working:true,shortTool:true},{speed:0,tool:true,wall:true,working:true,side:-1},{speed:0,tool:true,wall:true,working:true,side:1}]){
   for(let i=0;i<180;i++){
