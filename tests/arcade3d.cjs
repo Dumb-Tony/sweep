@@ -23,3 +23,13 @@ const speed=M.fresh();M.step(speed,1,0,1/60);assert(speed.player.vx>0&&speed.pla
 for(let i=0;i<6;i++){const bad=M.fresh();bad.stage=5;bad.machineDirt.forEach(a=>a.fill(0));bad.wires=[...M.solution];bad.wires[i]=(bad.wires[i]+1)%4;assert(!M.repair(bad));}
 for(const invalid of [null,{}, {...s,stage:99},{...s,held:9},{...s,player:{x:NaN,z:0,yaw:0}},{...s,dust:[]}])assert(!M.valid(invalid));
 console.log('PASS wall/boundary collision, acceleration/release, six circuit failures, save validation');
+// A nearly complete patch must remain discoverable and never display 100%.
+for(const [stage,phase,key,goal] of [[1,0,'dust',0],[2,0,'grime',0],[3,0,'removed',1],[3,2,'floor',1],[4,0,'wallStrip',1],[4,1,'wallPatch',1],[4,2,'wallPaint',1]]){
+ const c=M.fresh();c.stage=stage;c.floorPhase=phase;c.wallPhase=phase;c[key].fill(goal);const i=stage===4?0:76;c[key][i]=goal===0?.001:.999;
+ assert.deepEqual(M.remaining(c),[i]);assert.equal(M.percent(c),99);
+ const q=stage===4?M.wallTile(i):M.tile(i);Object.assign(c.player,{x:q.x+(stage===4?.9:0),z:q.z+(stage===4?0:.55),yaw:Math.PI});
+ M.work(c);assert(stage!==c.stage||phase!==(stage===4?c.wallPhase:c.floorPhase),'last patch advances immediately');
+}
+const stuck=M.fresh();stuck.stage=3;stuck.floorPhase=2;stuck.floor.fill(1);assert.equal(M.migrate(stuck).stage,4,'fully laid saved floor advances on load');
+for(let heading=0;heading<32;heading++){const c=M.fresh();c.stage=1;c.dust.fill(0);c.dust[76]=Number.EPSILON;const q=M.tile(76);Object.assign(c.player,{x:q.x,z:q.z+.55,yaw:heading*Math.PI/16});assert.equal(M.percent(c),99);M.work(c);assert.equal(c.stage,2,'patch at feet can finish from every camera heading');}
+console.log('PASS last-patch discovery, honest percentages, every surface handoff and completed-save recovery');

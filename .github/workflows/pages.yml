@@ -32,6 +32,7 @@ jobs:
           node tests/mouse-look.mjs
           node --check prototypes/arcade3d/scene.js
           node --check prototypes/arcade3d/art.js
+          node --check prototypes/arcade3d/tools.js
           node --check prototypes/arcade3d/character.js
           node --check prototypes/arcade3d/mouse-look.js
       - uses: actions/configure-pages@v5

@@ -5,7 +5,7 @@ globalThis.document={createElement:()=>({getContext:()=>({fillRect(){},strokeRec
 const art={surfaceMat:color=>new T.MeshStandardMaterial({color}),box(parent,x,y,z,w,h,d,material){const mesh=new T.Mesh(new T.BoxGeometry(w,h,d),material);mesh.position.set(x,y,z);parent.add(mesh);return mesh;},tube(){},contact(){}};
 const model=createCharacter(art);
 const positions=[];
-for(const state of [{speed:0},{speed:4.2},{speed:2.8,hauling:true},{speed:0,tool:true,working:true},{speed:0,tool:true,wall:true,working:true,side:-1},{speed:0,tool:true,wall:true,working:true,side:1}]){
+for(const state of [{speed:0},{speed:4.2},{speed:2.8,hauling:true},{speed:0,tool:true,working:true},{speed:0,tool:true,working:true,shortTool:true},{speed:0,tool:true,wall:true,working:true,side:-1},{speed:0,tool:true,wall:true,working:true,side:1}]){
   for(let i=0;i<180;i++){
     model.animate({dt:1/60,speed:0,phase:i*.09,time:i*16.67,working:false,hauling:false,tool:false,wall:false,side:1,...state});
     model.root.updateMatrixWorld(true);
@@ -16,5 +16,5 @@ for(const state of [{speed:0},{speed:4.2},{speed:2.8,hauling:true},{speed:0,tool
 assert.notDeepEqual(positions[0],positions[1],'walking changes the pose');
 assert.notDeepEqual(positions[1],positions[2],'hauling has its own arm pose');
 assert.notDeepEqual(positions[3],positions[4],'wall reach differs from floor tools');
-assert.notDeepEqual(positions[4],positions[5],'both wall-side reaches animate');
+assert.notDeepEqual(positions[5],positions[6],'both wall-side reaches animate');
 console.log('PASS articulated character: idle, walking, hauling, floor work and both wall reaches');

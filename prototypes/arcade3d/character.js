@@ -75,7 +75,7 @@ export function createCharacter(art) {
     arms.push({shoulder,elbow,wrist,side});
   }
   art.contact(root,0,0,.95,.75,.42,.008);
-  let gait=0;
+  let gait=0,crouch=0;
   const down=new T.Vector3(0,-1,0);
   function reach(arm,point){
     const start=arm.shoulder.position.clone(),end=new T.Vector3(...point).sub(start);
@@ -87,9 +87,10 @@ export function createCharacter(art) {
     const lower=end.multiplyScalar(length).sub(mid).normalize().applyQuaternion(arm.shoulder.quaternion.clone().invert());
     arm.elbow.quaternion.setFromUnitVectors(down,lower);
   }
-  function animate({dt,speed,phase,time,working,hauling,tool,wall,side}){
+  function animate({dt,speed,phase,time,working,hauling,tool,wall,side,shortTool=false}){
     gait=T.MathUtils.lerp(gait,Math.min(1,speed/3.2),1-Math.exp(-12*dt));
-    hips.position.y=.88+Math.sin(phase*2)*.015*gait;
+    crouch=T.MathUtils.lerp(crouch,shortTool&&working&&speed<.3?1:0,1-Math.exp(-10*dt));
+    hips.position.y=.88+Math.sin(phase*2)*.015*gait-crouch*.38;
     chest.rotation.z=Math.sin(phase)*.018*gait;chest.rotation.x=hauling?.075:working?.035:0;
     head.rotation.y=Math.sin(time*.00065)*.018*(1-gait);
     for(const leg of legs){const swing=Math.sin(phase+(leg.side<0?0:Math.PI));leg.hip.rotation.x=swing*.42*gait;leg.knee.rotation.x=Math.max(0,-swing)*.65*gait;leg.foot.rotation.x=-leg.knee.rotation.x*.45;}
@@ -97,6 +98,8 @@ export function createCharacter(art) {
     if(tool&&!wall){reach(arms[1],[.32,-.22,.28]);reach(arms[0],[.3,-.10,.23]);}
     if(wall){const a=side<0?arms[0]:arms[1];reach(a,[side*.57,.13+(working?Math.sin(time*.012)*.08:0),.05]);}
     if(hauling)for(const arm of arms)reach(arm,[arm.side*.28,-.21,.26]);
+    if(crouch){chest.rotation.x+=crouch*.22;for(const leg of legs){leg.hip.rotation.x-=crouch*.7;leg.knee.rotation.x+=crouch*1.35;leg.foot.rotation.x-=crouch*.65;}reach(arms[1],[.32,-.34,.43]);}
+    return crouch;
   }
   return {root,animate};
 }

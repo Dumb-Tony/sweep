@@ -19,3 +19,7 @@ dialog{background:linear-gradient(135deg,#273e47,#192e38);border-color:#adbfa64a
 #screen{border:10px solid #101c24;border-radius:25px;box-shadow:0 0 0 2px #697b773b,0 0 30px #74c6ab10}#wires{padding:12px;border:1px solid #93ad9360;border-radius:8px;background:radial-gradient(circle,#829e8050 1px,transparent 1px) 0 0/12px 12px,#173f39;box-shadow:inset 0 0 25px #071c2160}#wires button{background:linear-gradient(135deg,#243d3a,#172d2d);border-color:#80947866;border-radius:5px;box-shadow:inset 0 0 0 3px #102923}#wires svg{filter:drop-shadow(0 0 3px #9ed7a126)}
 
 #objective{position:fixed;top:100px;left:28px;z-index:2;background:#183238df;padding:10px 16px;border:1px solid #c9d4b43b;border-radius:8px;color:#ecdbba;font:14px Georgia;pointer-events:none}#journal:not([hidden])~#objective{display:none}#cloth{display:block;width:100%;touch-action:none;border:6px solid #13242c;border-radius:12px;cursor:crosshair}#patches{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}#patches button{padding:6px;font-size:10px}@media(max-width:760px){#journalToggle{display:block}#objective{top:76px;left:15px;font-size:12px}#journal{top:112px}}
+
+#tools{flex-wrap:wrap;justify-content:center;max-width:96vw}#tools button{font-size:11px;padding:9px}#inspect[aria-pressed=true]{border-color:#efbf68;color:#efbf68}#findWork{border-color:#b1cba177}#context{bottom:130px}
+
+#tools{width:max-content}

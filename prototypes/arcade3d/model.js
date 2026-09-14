@@ -15,13 +15,15 @@ const RoomModel = (() => {
   }
   const wallTile=i=>({x:i<8?-8.52:8.52,z:-3.35+(i%8)*1.55});
   const mean=a=>a.reduce((n,v)=>n+v,0)/a.length;
-  function migrate(old){if(!old)return null;if(old.version===3)return valid(old)?old:null;if(old.version!==2)return null;const n=Object.assign(fresh(),old,{version:3});if(n.stage>=3){n.floorPhase=2;n.removed.fill(1);}if(n.stage>=5){n.wallPhase=2;n.wallStrip.fill(1);n.wallPatch.fill(1);n.wallPaint.fill(1);n.machineDirt.forEach(a=>a.fill(0));}return valid(n)?n:null;}
+  function migrate(old){if(!old)return null;if(old.version===3){if(!valid(old))return null;while(workKey(old)&&!remaining(old).length)work(old);return old;}if(old.version!==2)return null;const n=Object.assign(fresh(),old,{version:3});if(n.stage>=3){n.floorPhase=2;n.removed.fill(1);}if(n.stage>=5){n.wallPhase=2;n.wallStrip.fill(1);n.wallPatch.fill(1);n.wallPaint.fill(1);n.machineDirt.forEach(a=>a.fill(0));}return valid(n)?n:null;}
   function workKey(s){return s.stage===1?'dust':s.stage===2?'grime':s.stage===3?(s.floorPhase===0?'removed':s.floorPhase===2?'floor':null):s.stage===4?['wallStrip','wallPatch','wallPaint'][s.wallPhase]:null;}
   function progress(s){if(s.stage===0)return s.cabinets.filter(c=>c.stored).length/3;if(s.stage===3&&s.floorPhase===1)return 1-(s.loose.reduce((a,v)=>a+v,0)+s.load)/COUNT;if(s.stage===5)return 1-mean(s.machineDirt.flat());const key=workKey(s);if(key)return s.stage<3?1-mean(s[key]):mean(s[key]);return s.stage===7?1:0;}
+  function remaining(s){const key=workKey(s);if(key)return s[key].flatMap((v,i)=>(s.stage<3?v>0:v<1)?[i]:[]);if(s.stage===3&&s.floorPhase===1)return s.loose.flatMap((v,i)=>v?[i]:[]);return [];}
+  function percent(s){const p=progress(s),unfinished=workKey(s)?remaining(s).length:s.stage===5?s.machineDirt.flat().some(v=>v>0):p<1;return unfinished?Math.min(99,Math.floor(p*100)):100;}
   function work(s){const key=workKey(s);if(!key)return 0;const p=s.player;let n=0;
     if(s.stage===4){let best=-1,dist=1.9;for(let i=0;i<16;i++){const w=wallTile(i),d=Math.hypot(w.x-p.x,w.z-p.z);if(d<dist&&s[key][i]<1){best=i;dist=d;}}if(best>=0){s[key][best]=Math.min(1,s[key][best]+.09);n++;}}
-    else{const x=p.x+Math.sin(p.yaw)*.55,z=p.z+Math.cos(p.yaw)*.55;for(let i=0;i<COUNT;i++){const q=tile(i);if(Math.hypot(q.x-x,q.z-z)>.92)continue;const goal=s.stage<3?0:1;if(s[key][i]===goal)continue;s[key][i]=goal===0?Math.max(0,s[key][i]-.24):Math.min(1,s[key][i]+.2);if(key==='removed'&&s[key][i]===1)s.loose[i]=1;n++;}}
-    if(progress(s)>=1){if(s.stage===3&&s.floorPhase===0)s.floorPhase=1;else if(s.stage===4&&s.wallPhase<2)s.wallPhase++;else s.stage++;}return n;
+    else{const x=p.x+Math.sin(p.yaw)*.55,z=p.z+Math.cos(p.yaw)*.55;for(let i=0;i<COUNT;i++){const q=tile(i);if(Math.hypot(q.x-x,q.z-z)>.92&&Math.hypot(q.x-p.x,q.z-p.z)>.65)continue;const goal=s.stage<3?0:1;if(s[key][i]===goal)continue;s[key][i]=goal===0?Math.max(0,s[key][i]-.24):Math.min(1,s[key][i]+.2);if(key==='removed'&&s[key][i]===1)s.loose[i]=1;n++;}}
+    if(!remaining(s).length){if(s.stage===3&&s.floorPhase===0)s.floorPhase=1;else if(s.stage===4&&s.wallPhase<2)s.wallPhase++;else s.stage++;}return n;
   }
   function debris(s){if(s.stage!==3||s.floorPhase!==1)return 'unavailable';if(Math.hypot(s.player.x+7,s.player.z-7.2)<2&&s.load){s.load=0;if(!s.loose.some(Boolean)){s.floorPhase=2;return 'disposed';}return 'unloaded';}if(s.load>=12)return 'full';let n=0;for(let i=0;i<COUNT&&s.load<12;i++){const q=tile(i);if(s.loose[i]&&Math.hypot(q.x-s.player.x,q.z-s.player.z)<1.65){s.loose[i]=0;s.load++;n++;}}return n?'collected':'nearer';}
   function wipe(s,c,patch){if(s.stage!==5||!Number.isInteger(c)||c<0||c>2||!Number.isInteger(patch)||patch<0||patch>=24)return false;s.machineDirt[c][patch]=Math.max(0,s.machineDirt[c][patch]-.34);return true;}
@@ -57,7 +59,7 @@ const RoomModel = (() => {
     let result=[],at=best;while(id(at)!==id(start)){result.push(world(at));at=prev.get(id(at));if(!at)return [];}return result.reverse();
   }
   function repair(s){if(s.stage===5&&s.machineDirt.every(a=>a.every(v=>v===0))&&s.wires.every((v,i)=>v===solution[i])){s.repaired=true;s.stage=6;return true;}return false;}
-  return {fresh,valid,migrate,workKey,wallTile,wipe,cameraPosition,cameraBlocked,blocked,progress,work,step,nearest,interact,path,repair,bays,tile,COUNT,solution};
+  return {fresh,valid,migrate,workKey,wallTile,wipe,cameraPosition,cameraBlocked,blocked,progress,percent,remaining,work,step,nearest,interact,path,repair,bays,tile,COUNT,solution};
 })();
 if(typeof module!=='undefined')module.exports=RoomModel;
 if(typeof window!=='undefined')window.RoomModel=RoomModel;
