@@ -2,9 +2,9 @@
 
 [Play After Hours in 3D](https://dumb-tony.github.io/sweep/) — walk into a forgotten arcade and bring it back to life.
 
-The visual overhaul adds shaped cabinets with original artwork, curved reflective CRTs, textured floors and walls, warm practical lighting, contact shadows, workshop details, and a paper restoration journal. The latest expansion adds an over-the-shoulder camera and a much deeper restoration route. See [the restoration expansion](docs/RESTORATION_EXPANSION.md) and [visual release notes](docs/VISUAL_OVERHAUL.md).
+The visual overhaul adds shaped cabinets with original artwork, curved reflective CRTs, textured floors and walls, warm practical lighting, contact shadows, workshop details, and a paper restoration journal. The latest update adds a centered chase camera and a more detailed, articulated character. See [character and camera notes](docs/CHARACTER_CAMERA.md), [the restoration expansion](docs/RESTORATION_EXPANSION.md), and [visual release notes](docs/VISUAL_OVERHAUL.md).
 
-The arcade is a fully 3D environment: an animated third-person character, shoulder/room cameras, modelled cabinets and tools, shadows, a back workshop, a real doorway, and collision-constrained cabinet hauling. Walk with WASD/arrows or click the floor. E interacts; hold Space to work; right-drag or Q/R turns the shoulder view; scroll zooms. In-world labels let you approach cabinets and park in storage without dragging objects across the screen.
+The arcade is a fully 3D environment: an animated third-person character, chase/room cameras, modelled cabinets and tools, shadows, a back workshop, a real doorway, and collision-constrained cabinet hauling. Walk with WASD/arrows or click the floor. E interacts; hold Space to work; right-drag or Q/R turns the centered view; scroll zooms. In-world labels let you approach cabinets and park in storage without dragging objects across the screen.
 
 The first-corner restoration loop includes storing three cabinets; sweeping and mopping; lifting, collecting, and disposing of the old flooring; installing a new floor; stripping, patching, and repainting the walls; hand-cleaning every cabinet; repairing Star Signal; hauling it back; and playing it. Existing progress migrates forward. See [the 3D implementation and validation notes](docs/ARCADE_3D.md) and [the broader arcade design](docs/ARCADE_PIVOT.md).
 

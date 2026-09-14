@@ -25,7 +25,8 @@ const RoomModel = (() => {
   }
   function debris(s){if(s.stage!==3||s.floorPhase!==1)return 'unavailable';if(Math.hypot(s.player.x+7,s.player.z-7.2)<2&&s.load){s.load=0;if(!s.loose.some(Boolean)){s.floorPhase=2;return 'disposed';}return 'unloaded';}if(s.load>=12)return 'full';let n=0;for(let i=0;i<COUNT&&s.load<12;i++){const q=tile(i);if(s.loose[i]&&Math.hypot(q.x-s.player.x,q.z-s.player.z)<1.65){s.loose[i]=0;s.load++;n++;}}return n?'collected':'nearer';}
   function wipe(s,c,patch){if(s.stage!==5||!Number.isInteger(c)||c<0||c>2||!Number.isInteger(patch)||patch<0||patch>=24)return false;s.machineDirt[c][patch]=Math.max(0,s.machineDirt[c][patch]-.34);return true;}
-  function cameraPosition(s,yaw,distance=3.5,pitch=.16){const p=s.player,dx=Math.sin(yaw)*distance+Math.cos(yaw)*.65,dz=Math.cos(yaw)*distance-Math.sin(yaw)*.65;let f=1;for(let i=1;i<=80;i++){const q=i/80;if(blocked(s,p.x+dx*q,p.z+dz*q,.16)){f=Math.max(0,(i-2)/80);break;}}return {x:p.x+dx*f,z:p.z+dz*f,y:1.65+Math.sin(pitch)*distance*f};}
+  function cameraBlocked(s,x,z,y){if(y<3.5&&(Math.abs(x)>8.54||z< -10.34))return true;if(y<3&&Math.abs(z+5)<.36&&Math.abs(x)>2.14)return true;if(y<1.4&&x>6.54&&z< -8.99)return true;return y<2.65&&s.cabinets.some(c=>Math.abs(x-c.x)<.81&&Math.abs(z-c.z)<.78);}
+  function cameraPosition(s,yaw,distance=4.2,pitch=.24){const p=s.player,dx=Math.sin(yaw)*distance,dz=Math.cos(yaw)*distance;let f=1;for(let i=1;i<=80;i++){const q=i/80;if(cameraBlocked(s,p.x+dx*q,p.z+dz*q,1.65+Math.sin(pitch)*distance*q)){f=Math.max(0,(i-2)/80);break;}}return {x:p.x+dx*f,z:p.z+dz*f,y:1.65+Math.sin(pitch)*distance*f};}
   function step(s,dx,dz,dt){dt=Math.max(0,Math.min(dt,.04));const p=s.player,mag=Math.hypot(dx,dz),speed=s.held<0?4.2:2.8,k=1-Math.exp(-18*dt);p.vx=(p.vx||0)+((mag?dx/mag*speed:0)-(p.vx||0))*k;p.vz=(p.vz||0)+((mag?dz/mag*speed:0)-(p.vz||0))*k;
     const ox=p.x,oz=p.z;
     if(!blocked(s,p.x+p.vx*dt,p.z,.32,s.held))p.x+=p.vx*dt;else p.vx=0;
@@ -56,7 +57,7 @@ const RoomModel = (() => {
     let result=[],at=best;while(id(at)!==id(start)){result.push(world(at));at=prev.get(id(at));if(!at)return [];}return result.reverse();
   }
   function repair(s){if(s.stage===5&&s.machineDirt.every(a=>a.every(v=>v===0))&&s.wires.every((v,i)=>v===solution[i])){s.repaired=true;s.stage=6;return true;}return false;}
-  return {fresh,valid,migrate,workKey,wallTile,wipe,cameraPosition,blocked,progress,work,step,nearest,interact,path,repair,bays,tile,COUNT,solution};
+  return {fresh,valid,migrate,workKey,wallTile,wipe,cameraPosition,cameraBlocked,blocked,progress,work,step,nearest,interact,path,repair,bays,tile,COUNT,solution};
 })();
 if(typeof module!=='undefined')module.exports=RoomModel;
 if(typeof window!=='undefined')window.RoomModel=RoomModel;
